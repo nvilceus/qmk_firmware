@@ -98,11 +98,11 @@ enum {
 };
 
 // Function associated with all tap dances
-td_state_t cur_dance(qk_tap_dance_state_t *state);
+td_state_t cur_dance(tap_dance_state_t *state);
 
 // Functions associated with individual tap dances
-void lswitch_finished(qk_tap_dance_state_t *state, void *user_data);
-void lswitch_reset(qk_tap_dance_state_t *state, void *user_data);
+void lswitch_finished(tap_dance_state_t *state, void *user_data);
+void lswitch_reset(tap_dance_state_t *state, void *user_data);
 
 uint16_t L_LEVEL = L1;
 
@@ -140,8 +140,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [L7] = LAYOUT(
                _______,
-    KC_PWR,    MOVE_TO_L1,    EEP_RST,
-    KC_SLEP,    RGB_TOG,    RESET
+    KC_PWR,    MOVE_TO_L1,    QK_CLEAR_EEPROM,
+    KC_SLEP,    RGB_TOG,    QK_BOOT
   ),
 };
 
@@ -160,7 +160,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 // Determine the current tap dance state
-td_state_t cur_dance(qk_tap_dance_state_t *state) {
+td_state_t cur_dance(tap_dance_state_t *state) {
     if (state->count == 1) {
         if (!state->pressed) return TD_SINGLE_TAP;
         else return TD_SINGLE_HOLD;
@@ -175,7 +175,7 @@ static td_tap_t lswitch_tap_state = {
 };
 
 // Functions that control what our tap dance key does
-void lswitch_finished(qk_tap_dance_state_t *state, void *user_data) {
+void lswitch_finished(tap_dance_state_t *state, void *user_data) {
     lswitch_tap_state.state = cur_dance(state);
     switch (lswitch_tap_state.state) {
         case TD_SINGLE_TAP:
@@ -200,7 +200,7 @@ void lswitch_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void lswitch_reset(qk_tap_dance_state_t *state, void *user_data) {
+void lswitch_reset(tap_dance_state_t *state, void *user_data) {
     // If the key was held down and now is released then switch off the layer
     if (lswitch_tap_state.state == TD_SINGLE_HOLD) {
         layer_off(L7);
@@ -209,7 +209,7 @@ void lswitch_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 // Associate our tap dance key with its functionality
-qk_tap_dance_action_t tap_dance_actions[] = {
+tap_dance_action_t tap_dance_actions[] = {
     [L_SWITCH] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, lswitch_finished, lswitch_reset)
 };
 
